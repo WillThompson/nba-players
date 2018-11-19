@@ -32,16 +32,18 @@ colors = {
 
 app.layout = html.Div(children=[
     html.H4(children='NBA players'),
-    html.Label('Dropdown'),
+    html.Div('Below is a plot of NBA player data taken from the Advanced Stats page of NBA.com.'),
+    html.Label('X-axis: '),
     dcc.Dropdown(
-    	id = 'team_list',
-        options=[
-            {'label': 'Toronto Raptors', 'value': 'TOR'},
-            {'label': 'New York Knicks', 'value': 'NYK'},
-            {'label': 'Golden State Warriors', 'value': 'GSW'},
-            {'label': 'Portland Trailblazers', 'value': 'POR'},
-        ],
-        value='TOR'
+        id = 'x_axis_content',
+        options=[{'label': str(x), 'value': x} for x in df.columns],
+        value='AST'
+    ),
+    html.Label('Y-axis: '),
+    dcc.Dropdown(
+        id = 'y_axis_content',
+        options=[{'label': str(x), 'value': x} for x in df.columns],
+        value='PTS'
     ),
     dcc.Graph(id='raptors_table')
     #generate_table(df[df['TEAM'] == team]
@@ -49,30 +51,33 @@ app.layout = html.Div(children=[
 
 @app.callback(
     dash.dependencies.Output(component_id='raptors_table', component_property='figure'),
-    [dash.dependencies.Input(component_id='team_list', component_property='value')]
+    [dash.dependencies.Input(component_id='x_axis_content', component_property='value'),
+    dash.dependencies.Input(component_id='y_axis_content', component_property='value')]
 )
-def update_graph(input_value):
+def update_graph(x_content,y_content):
     
-    team = input_value
+    if x_content is None or y_content is None:
+        return{}
     return {
         'data': [
             go.Scatter(
-                x=df[df['PLAYER'] == i]['AST'],
-                y=df[df['PLAYER'] == i]['PTS'],
+                x=df[df['TEAM'] == i][x_content],
+                y=df[df['TEAM'] == i][y_content],
                 mode='markers',
-                opacity=0.8,
+                opacity=0.6,
                 marker={
-                    'size': np.sqrt(df[df['PLAYER'] == i]['MIN']),
+                    'size': np.sqrt(df[df['TEAM'] == i]['MIN']),
                     'line': {'width': 0.5, 'color': 'white'}
                 },
+                text=df[df['TEAM'] == i]['PLAYER'],
                 name=i
-            ) for i in df[df['TEAM'] == team]['PLAYER'].unique()
+            ) for i in df['TEAM'].unique()
         ],
         'layout': go.Layout(
-            xaxis={'title': 'Total Assists'},
-            yaxis={'title': 'Total Points'},
+            xaxis={'title': x_content},
+            yaxis={'title': y_content},
             margin={'l': 40, 'b': 40, 't': 40, 'r': 10},
-            legend={'x': 1.05, 'y': 1},
+            legend={'x': -0.2, 'y': 1},
             hovermode='closest'
         )
     }
