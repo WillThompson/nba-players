@@ -10,7 +10,6 @@ dependencies:
   - certifi=2018.10.15=py37_0
   - chardet=3.0.4=py37_1
   - openssl=1.1.1=h1de35cc_0
-  - requests=2.19.1=py37_0
   - urllib3=1.23=py37_0
   - click=7.0=py_0
   - dash=0.30.0=py_0
@@ -94,6 +93,7 @@ dependencies:
   - qt=5.9.6=h45cd832_2
   - qtconsole=4.4.2=py37_0
   - readline=7.0=h1de35cc_5
+  - requests=2.20.1=py37_0
   - selenium=3.14.1=py37h1de35cc_0
   - send2trash=1.5.0=py37_0
   - setuptools=40.5.0=py37_0
