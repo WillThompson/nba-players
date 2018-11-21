@@ -22,6 +22,9 @@ sys.stdout.write("Opening Firefox browser...")
 url = 'https://stats.nba.com/players/traditional/'
 browser = create_browser(url)
 
+# Wait a few seconds before reading the content.
+browser.implicitly_wait(5)
+
 # Set the per-mode to totals (option 1 in the list)
 browser.find_element_by_xpath('/html/body/main/div[2]/div/div[2]/div/div/div[1]/div[3]/div/div/label/select/option[1]').click()
 

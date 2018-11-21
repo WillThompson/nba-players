@@ -22,7 +22,6 @@ def generate_table(dataframe, max_rows=10):
     )
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 colors = {
@@ -30,24 +29,34 @@ colors = {
     'text': '#7FDBFF'
 }
 
-app.layout = html.Div(children=[
-    html.H4(children='NBA players'),
-    html.Div('Below is a plot of NBA player data taken from the Advanced Stats page of NBA.com.'),
-    html.Label('X-axis: '),
-    dcc.Dropdown(
-        id = 'x_axis_content',
-        options=[{'label': str(x), 'value': x} for x in df.columns],
-        value='AST'
-    ),
-    html.Label('Y-axis: '),
-    dcc.Dropdown(
-        id = 'y_axis_content',
-        options=[{'label': str(x), 'value': x} for x in df.columns],
-        value='PTS'
-    ),
-    dcc.Graph(id='raptors_table')
-    #generate_table(df[df['TEAM'] == team]
-])
+app.layout = html.Div([
+    
+    html.Div([
+        html.H4('NBA Player Data (2018/2019 season)'),
+        html.Div([
+            html.Div('Below is a plot of NBA player data taken from the Advanced Stats page of NBA.com.',style={"margin-bottom":'10px'}),
+            html.Label('X-axis: '),
+            dcc.Dropdown(
+                id = 'x_axis_content',
+                options=[{'label': str(x), 'value': x} for x in df.columns],
+                value='AST'
+            ),
+            html.Label('Y-axis: '),
+            dcc.Dropdown(
+                id = 'y_axis_content',
+                options=[{'label': str(x), 'value': x} for x in df.columns],
+                value='PTS'
+            )
+        ],className="three columns"),
+
+        html.Div([
+            dcc.Graph(id='raptors_table'
+            )
+        ], className="six columns")
+
+    ], className="row")
+    
+ ])
 
 @app.callback(
     dash.dependencies.Output(component_id='raptors_table', component_property='figure'),
@@ -77,7 +86,7 @@ def update_graph(x_content,y_content):
             xaxis={'title': x_content},
             yaxis={'title': y_content},
             margin={'l': 40, 'b': 40, 't': 40, 'r': 10},
-            legend={'x': -0.2, 'y': 1},
+            legend={'x': 0, 'y': -0.3, 'orientation': "h"},
             hovermode='closest'
         )
     }
