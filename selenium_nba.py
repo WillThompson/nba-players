@@ -53,6 +53,26 @@ T = np.array(player_stats).transpose()
 D = {a:b for (a,b) in zip(col_names,[player_names]+list(T))}
 df = pd.DataFrame(D)
 
-sys.stdout.write("\nWriting to csv...")
-df.to_csv('nba_players.csv',index=False)
+# Either write the data to SQL database or output to a csv file
+to_postgres = True
+if to_postgres:
+	
+	sys.stdout.write("\nWriting to postgres database...")
+
+	# Remove the percent signs from variable names, replace them with Z's
+	df.rename(columns={'FT%': 'FTZ', 'FG%': 'FGZ', '3P%':'3PZ'},inplace=True)
+
+	# Write variables in lower case for SQL queries
+	df.rename(columns=lambda x: x.lower().strip(),inplace=True)
+
+	TABLE_NAME = "players"
+	import nba_db
+	with nba_db.db_connect().begin() as conn:
+	    df.to_sql(TABLE_NAME, conn, if_exists='replace')
+
+else:
+	sys.stdout.write("\nWriting to csv...")
+	df.to_csv('nba_players.csv',index=False)
+
+# ALL DONE!
 sys.stdout.write("\nDone.\n")

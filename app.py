@@ -7,8 +7,11 @@ import pandas as pd
 import plotly.graph_objs as go
 import numpy as np
 
-df = pd.read_csv(
-    './nba_players.csv')
+import nba_db as db
+
+
+conn = db.db_connect()
+df = pd.read_sql("SELECT * FROM players;", conn)
 
 def generate_table(dataframe, max_rows=10):
     return html.Table(
@@ -22,6 +25,7 @@ def generate_table(dataframe, max_rows=10):
     )
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+#external_stylesheets = ['./css/main.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 colors = {
@@ -39,13 +43,13 @@ app.layout = html.Div([
             dcc.Dropdown(
                 id = 'x_axis_content',
                 options=[{'label': str(x), 'value': x} for x in df.columns],
-                value='AST'
+                value='ast'
             ),
             html.Label('Y-axis: '),
             dcc.Dropdown(
                 id = 'y_axis_content',
                 options=[{'label': str(x), 'value': x} for x in df.columns],
-                value='PTS'
+                value='pts'
             )
         ],className="three columns"),
 
@@ -53,6 +57,12 @@ app.layout = html.Div([
             dcc.Graph(id='raptors_table'
             )
         ], className="six columns")
+
+    ], className="row"),
+
+    html.Div([
+        
+        generate_table(df)
 
     ], className="row")
     
@@ -70,17 +80,17 @@ def update_graph(x_content,y_content):
     return {
         'data': [
             go.Scatter(
-                x=df[df['TEAM'] == i][x_content],
-                y=df[df['TEAM'] == i][y_content],
+                x=df[df['team'] == i][x_content],
+                y=df[df['team'] == i][y_content],
                 mode='markers',
                 opacity=0.6,
                 marker={
-                    'size': np.sqrt(df[df['TEAM'] == i]['MIN']),
+                    #'size': np.sqrt(df[df['team'] == i]['min']),
                     'line': {'width': 0.5, 'color': 'white'}
                 },
-                text=df[df['TEAM'] == i]['PLAYER'],
+                text=df[df['team'] == i]['player'],
                 name=i
-            ) for i in df['TEAM'].unique()
+            ) for i in df['team'].unique()
         ],
         'layout': go.Layout(
             xaxis={'title': x_content},
